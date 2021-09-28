@@ -38,9 +38,45 @@ los mismos.
 """
 
 # Construccion de modelos
+def newCatalog():
+    catalog = {'artists': None,
+               'artworks': None,
+    }
+    """
+    Este indice crea un mapa cuyas llaves son los id de la Artwork que guarda
+    """
 
+    catalog['artworks'] = mp.newMap(10000,
+                                   maptype='CHAINING',
+                                   loadfactor=4.0,
+                                   comparefunction=compareArtwroksbyObjectID)
+
+    """
+    Este indice crea un mapa cuyas llaves son los id del Artista que guarda
+    """
+    catalog['artists'] = mp.newMap(800,
+                                   maptype='CHAINING',
+                                   loadfactor=4.0,
+                                   comparefunction=compareArtistbyConstituentID)
+
+    return catalog
 # Funciones para agregar informacion al catalogo
+def addArtwork(catalog, artwork):
+    """
+    Edita el artwork para que busque sus artistas y las nacionalidades de estos artistas y los guarda
+    Agrega el artwork que se suministro al catalog usando su objectID como su llave
+    """
+    constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
+    for constituentId in constituentIds :
+        print(constituentId)
 
+    #mp.put(catalog['artworks'],artwork['ObjectID'],artwork)
+    return catalog
+
+def addArtist(catalog, artist):
+    """
+    Agrega el artist al mapa artists del catalogo usando su ConsituentID como llave"""
+    mp.put(catalog['artworks'],artist['ConstituentID'],artist)
 # Funciones para creacion de datos
 
 # Funciones de consulta
@@ -48,3 +84,32 @@ los mismos.
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+
+# Funciones de Comparacion
+
+def compareArtwroksbyObjectID(id, entry):
+    """
+    Compara dos ids de los artowrks, id es un identificador
+    y entry una pareja llave-valor
+    """
+    identry = me.getKey(entry)
+    if (int(id) == int(identry)):
+        return 0
+    elif (int(id) > int(identry)):
+        return 1
+    else:
+        return -1
+
+def compareArtistbyConstituentID(id, entry):
+    """
+    Compara dos ids de artistas, id es un identificador
+    y entry una pareja llave-valor
+    """
+    identry = me.getKey(entry)
+    if (int(id) == int(identry)):
+        return 0
+    elif (int(id) > int(identry)):
+        return 1
+    else:
+        return -1
+
