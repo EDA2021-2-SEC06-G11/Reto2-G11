@@ -41,15 +41,14 @@ los mismos.
 def newCatalog():
     catalog = {'artists': None,
                'artworks': None,
+               'medium': None,
+               'objectId': None
     }
     """
     Este indice crea un mapa cuyas llaves son los id de la Artwork que guarda
     """
 
-    catalog['artworks'] = mp.newMap(10000,
-                                   maptype='CHAINING',
-                                   loadfactor=4.0,
-                                   comparefunction=compareArtwroksbyObjectID)
+    catalog['artworks'] = lt.newList()
 
     """
     Este indice crea un mapa cuyas llaves son los id del Artista que guarda
@@ -58,7 +57,14 @@ def newCatalog():
                                    maptype='CHAINING',
                                    loadfactor=4.0,
                                    comparefunction=compareArtistbyConstituentID)
-
+    catalog['medium'] = mp.newMap(100,
+                                  maptype='CHAINING',
+                                  loadfactor=4.0,
+                                  comparefunction=comparebyMedium)
+    catalog['objectId'] =  mp.newMap(100,
+                                  maptype='CHAINING',
+                                  loadfactor=4.0,
+                                  comparefunction=compareArtworksbyObjectID)
     return catalog
 # Funciones para agregar informacion al catalogo
 def addArtwork(catalog, artwork):
@@ -68,15 +74,49 @@ def addArtwork(catalog, artwork):
     """
     constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
     for constituentId in constituentIds :
-        print(constituentId)
+        #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
+        Id = constituentId.strip()
+        Id = Id.strip("[")
+        Id = Id.strip("]")
+        
+        # UTILIZAMOS LOS CONSTITUENTID INDIVIDUALES PARA ASIGNAR NOMBRE Y NACIONALIDAD A LAS ARTWORKS
+        # TAMBIEN SE AGREGA ESTA OBRA A LAS OBRAS DEL ARTISTA AL CUAL REFERENCIA
+        artists = catalog['artists']
+    ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
+    medium = artwork['Medium']
+    if mp.contains(catalog['medium'],medium) == True:
+        print("Si encontro un medium repetido")
+        lista = mp.get(catalog['medium'], medium)
+        lt.addLast(lista,artwork)
+        mp.put(catalog['medium'],medium,lista)
 
+    else:
+        lista = lt.newList()
+        lt.addLast(lista,artwork)
+        mp.put(catalog['medium'], medium, lista)
+
+
+    lt.addLast(catalog['artworks'], artwork)
     #mp.put(catalog['artworks'],artwork['ObjectID'],artwork)
     return catalog
 
 def addArtist(catalog, artist):
     """
-    Agrega el artist al mapa artists del catalogo usando su ConsituentID como llave"""
-    mp.put(catalog['artworks'],artist['ConstituentID'],artist)
+    Agrega el artist al mapa artists del catalogo usando su ConsituentID como llave y agregandole un 
+    nuevo parametro llamado obras el cual guarda todas las obras que este artista tenga a su nombre"""
+    artist["Obras"]= lt.newList()
+    print(artist)
+    mp.put(catalog['artists'],artist['ConstituentID'],artist)
+
+
+def addArtworkLab(catalog,artwork):
+    """
+    Funcion para agregar el artwork a la lista y despues agregar al mapa medium
+    """
+    lt.addLast(catalog['artworks'],artwork)
+    
+
+
 # Funciones para creacion de datos
 
 # Funciones de consulta
@@ -87,7 +127,7 @@ def addArtist(catalog, artist):
 
 # Funciones de Comparacion
 
-def compareArtwroksbyObjectID(id, entry):
+def compareArtworksbyObjectID(id, entry):
     """
     Compara dos ids de los artowrks, id es un identificador
     y entry una pareja llave-valor
@@ -112,4 +152,18 @@ def compareArtistbyConstituentID(id, entry):
         return 1
     else:
         return -1
+
+def comparebyMedium(id, entry):
+    """
+    Compara dos mediums, id es un identificador
+    y entry una pareja llave-valor
+    """
+    identry = me.getKey(entry)
+    if (id) == (identry):
+        return 1
+    elif ((id) > (identry)):
+        return 0
+    else:
+        return 0
+
 

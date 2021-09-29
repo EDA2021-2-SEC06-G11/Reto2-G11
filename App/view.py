@@ -51,6 +51,7 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = controller.initCatalog()
         controller.loadData(catalog)
+        print(controller.solucionReqLab5(catalog))
 
     elif int(inputs[0]) == 2:
         pass

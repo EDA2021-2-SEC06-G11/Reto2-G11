@@ -55,11 +55,13 @@ def loadArtistas(catalog):
     """
     """
     Ejemplo de artista: {'ConstituentID': '10370', 'DisplayName': 'Edison Price, New York, NY', 'ArtistBio': ''
-    , 'Nationality': '', 'Gender': '', 'BeginDate': '0', 'EndDate': '0', 'Wiki QID': '', 'ULAN': ''}"""
+    , 'Nationality': '', 'Gender': '', 'BeginDate': '0', 'EndDate': '0', 'Wiki QID': '', 'ULAN': '',
+    'Obras': [obra1,obra2] es un lt tho}"""
     artistfile = cf.data_dir + 'Artists-utf8-small.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
+        break
 
 def loadArtworks(catalog):
     """
@@ -92,4 +94,7 @@ def loadArtworks(catalog):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def solucionReqLab5(catalog):
+    respuesta = "salu2"
+    return respuesta
 
