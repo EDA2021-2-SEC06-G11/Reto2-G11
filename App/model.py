@@ -81,14 +81,15 @@ def addArtwork(catalog, artwork):
         
         # UTILIZAMOS LOS CONSTITUENTID INDIVIDUALES PARA ASIGNAR NOMBRE Y NACIONALIDAD A LAS ARTWORKS
         # TAMBIEN SE AGREGA ESTA OBRA A LAS OBRAS DEL ARTISTA AL CUAL REFERENCIA
-        artists = catalog['artists']
+        #artists = catalog['artists']
     ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
     medium = artwork['Medium']
     if mp.contains(catalog['medium'],medium) == True:
         print("Si encontro un medium repetido")
         lista = mp.get(catalog['medium'], medium)
-        lt.addLast(lista,artwork)
-        mp.put(catalog['medium'],medium,lista)
+        valor = me.getValue(lista)
+        lt.addLast(valor,artwork)
+        mp.put(catalog['medium'],medium,valor)
 
     else:
         lista = lt.newList()
