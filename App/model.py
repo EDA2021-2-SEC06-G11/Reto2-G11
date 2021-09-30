@@ -57,7 +57,7 @@ def newCatalog():
                                    maptype='CHAINING',
                                    loadfactor=4.0,
                                    comparefunction=compareArtistbyConstituentID)
-    catalog['medium'] = mp.newMap(100,
+    catalog['medium'] = mp.newMap(1000,
                                   maptype='CHAINING',
                                   loadfactor=4.0,
                                   comparefunction=comparebyMedium)
@@ -84,7 +84,9 @@ def addArtwork(catalog, artwork):
         #artists = catalog['artists']
     ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
     medium = artwork['Medium']
-    if mp.contains(catalog['medium'],medium) == True:
+    if mp.contains(catalog['medium'],medium) :
+        if medium == "Glass":
+            print(medium)
         lista = mp.get(catalog['medium'], medium)
         valor = me.getValue(lista)
         lt.addLast(valor,artwork)
@@ -92,8 +94,12 @@ def addArtwork(catalog, artwork):
 
     else:
         lista = lt.newList("ARRAY_LIST")
+        if medium == "Glass":
+            print("Paso al else siendo glass")
+            print(medium)
         lt.addLast(lista,artwork)
-        mp.put(catalog['medium'], medium, lista)
+        mp.put(catalog['medium'], artwork["Medium"], lista)
+
 
 
     lt.addLast(catalog['artworks'], artwork)
@@ -121,9 +127,16 @@ def addArtworkLab(catalog,artwork):
 # Funciones de consulta
 def getOldByMedium(catalog,number,medium):
     listaRespuesta = lt.newList("ARRAY_LIST")
-    listArtworks = mp.get(catalog['medium'],medium)
-    sa.sort(listArtworks,compareByDate)
-    listaRespuesta = lt.subList(listArtworks,0,int(number))
+    listArtworks = (mp.get(catalog['medium'],medium))
+    print(listArtworks== None)
+    print(listArtworks)
+    listArtworks = me.getValue(listArtworks)
+    iteracion = lt.iterator(listArtworks)
+    for artwork in iteracion:
+        if (artwork['Medium'] == medium):
+            lt.addLast(listaRespuesta,artwork)
+    sa.sort(listaRespuesta,compareByDate)
+    listaRespuesta = lt.subList(listaRespuesta,0,int(number))
     return listaRespuesta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -132,7 +145,7 @@ def getOldByMedium(catalog,number,medium):
 
 # Funciones de Comparacion
 def compareByDate(artwork1,artwork2):
-     return ((artwork1['Date'] < artwork2['BeginDate']))
+     return ((artwork1['Date'] < artwork2['Date']))
 
 def compareArtworksbyObjectID(id, entry):
     """

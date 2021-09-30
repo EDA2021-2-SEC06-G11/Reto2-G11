@@ -25,7 +25,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
-import prettytable as pt
+from prettytable import PrettyTable
 
 
 """
@@ -56,7 +56,7 @@ while True:
         numero = input("Ingrese el numero de obras mas antiguas que desea ver: ")
         listaRespuesta = controller.solucionReqLab5(catalog,numero,medio)
         iteracionListaRespuesta = lt.iterator(listaRespuesta)
-        table = pt(["Title","Date"])
+        table = PrettyTable(["Title","Date"])
         for artwork in iteracionListaRespuesta:
             table.add_row([artwork["Title"],artwork['Date']])
 
