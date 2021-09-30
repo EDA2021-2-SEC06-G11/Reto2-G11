@@ -61,7 +61,6 @@ def loadArtistas(catalog):
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
-        break
 
 def loadArtworks(catalog):
     """
@@ -94,7 +93,7 @@ def loadArtworks(catalog):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
-def solucionReqLab5(catalog):
-    respuesta = "salu2"
+def solucionReqLab5(catalog,number,medium):
+    respuesta = model.getOldByMedium(catalog,number,medium)
     return respuesta
 

@@ -72,12 +72,12 @@ def addArtwork(catalog, artwork):
     Edita el artwork para que busque sus artistas y las nacionalidades de estos artistas y los guarda
     Agrega el artwork que se suministro al catalog usando su objectID como su llave
     """
-    constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
-    for constituentId in constituentIds :
+    #constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
+    ##for constituentId in constituentIds :
         #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
-        Id = constituentId.strip()
-        Id = Id.strip("[")
-        Id = Id.strip("]")
+        ##Id = constituentId.strip()
+        ##Id = Id.strip("[")
+        ##Id = Id.strip("]")
         
         # UTILIZAMOS LOS CONSTITUENTID INDIVIDUALES PARA ASIGNAR NOMBRE Y NACIONALIDAD A LAS ARTWORKS
         # TAMBIEN SE AGREGA ESTA OBRA A LAS OBRAS DEL ARTISTA AL CUAL REFERENCIA
@@ -91,7 +91,7 @@ def addArtwork(catalog, artwork):
         mp.put(catalog['medium'],medium,valor)
 
     else:
-        lista = lt.newList()
+        lista = lt.newList("ARRAY_LIST")
         lt.addLast(lista,artwork)
         mp.put(catalog['medium'], medium, lista)
 
@@ -105,7 +105,6 @@ def addArtist(catalog, artist):
     Agrega el artist al mapa artists del catalogo usando su ConsituentID como llave y agregandole un 
     nuevo parametro llamado obras el cual guarda todas las obras que este artista tenga a su nombre"""
     artist["Obras"]= lt.newList()
-    print(artist)
     mp.put(catalog['artists'],artist['ConstituentID'],artist)
 
 
@@ -120,12 +119,20 @@ def addArtworkLab(catalog,artwork):
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def getOldByMedium(catalog,number,medium):
+    listaRespuesta = lt.newList("ARRAY_LIST")
+    listArtworks = mp.get(catalog['medium'],medium)
+    sa.sort(listArtworks,compareByDate)
+    listaRespuesta = lt.subList(listArtworks,0,int(number))
+    return listaRespuesta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
 
 # Funciones de Comparacion
+def compareByDate(artwork1,artwork2):
+     return ((artwork1['Date'] < artwork2['BeginDate']))
 
 def compareArtworksbyObjectID(id, entry):
     """
