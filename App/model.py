@@ -85,7 +85,6 @@ def addArtwork(catalog, artwork):
     ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
     medium = artwork['Medium']
     if mp.contains(catalog['medium'],medium) == True:
-        print("Si encontro un medium repetido")
         lista = mp.get(catalog['medium'], medium)
         valor = me.getValue(lista)
         lt.addLast(valor,artwork)
