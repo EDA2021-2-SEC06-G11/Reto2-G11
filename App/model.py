@@ -104,7 +104,6 @@ def addArtwork(catalog, artwork):
 
     lt.addLast(catalog['artworks'], artwork)
     #mp.put(catalog['artworks'],artwork['ObjectID'],artwork)
-    return catalog
 
 def addArtist(catalog, artist):
     """
