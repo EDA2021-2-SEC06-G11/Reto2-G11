@@ -57,7 +57,7 @@ def newCatalog():
                                    maptype='CHAINING',
                                    loadfactor=4.0,
                                    comparefunction=compareArtistbyConstituentID)
-    catalog['medium'] = mp.newMap(100,
+    catalog['medium'] = mp.newMap(1000,
                                   maptype='CHAINING',
                                   loadfactor=4.0,
                                   comparefunction=comparebyMedium)
@@ -72,40 +72,44 @@ def addArtwork(catalog, artwork):
     Edita el artwork para que busque sus artistas y las nacionalidades de estos artistas y los guarda
     Agrega el artwork que se suministro al catalog usando su objectID como su llave
     """
-    constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
-    for constituentId in constituentIds :
+    #constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
+    ##for constituentId in constituentIds :
         #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
-        Id = constituentId.strip()
-        Id = Id.strip("[")
-        Id = Id.strip("]")
+        ##Id = constituentId.strip()
+        ##Id = Id.strip("[")
+        ##Id = Id.strip("]")
         
         # UTILIZAMOS LOS CONSTITUENTID INDIVIDUALES PARA ASIGNAR NOMBRE Y NACIONALIDAD A LAS ARTWORKS
         # TAMBIEN SE AGREGA ESTA OBRA A LAS OBRAS DEL ARTISTA AL CUAL REFERENCIA
-        artists = catalog['artists']
+        #artists = catalog['artists']
     ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
     medium = artwork['Medium']
-    if mp.contains(catalog['medium'],medium) == True:
-        print("Si encontro un medium repetido")
+    if mp.contains(catalog['medium'],medium) :
+        if medium == "Glass":
+            print(medium)
         lista = mp.get(catalog['medium'], medium)
-        lt.addLast(lista,artwork)
-        mp.put(catalog['medium'],medium,lista)
+        valor = me.getValue(lista)
+        lt.addLast(valor,artwork)
+        mp.put(catalog['medium'],medium,valor)
 
     else:
-        lista = lt.newList()
+        lista = lt.newList("ARRAY_LIST")
+        if medium == "Glass":
+            print("Paso al else siendo glass")
+            print(medium)
         lt.addLast(lista,artwork)
-        mp.put(catalog['medium'], medium, lista)
+        mp.put(catalog['medium'], artwork["Medium"], lista)
+
 
 
     lt.addLast(catalog['artworks'], artwork)
     #mp.put(catalog['artworks'],artwork['ObjectID'],artwork)
-    return catalog
 
 def addArtist(catalog, artist):
     """
     Agrega el artist al mapa artists del catalogo usando su ConsituentID como llave y agregandole un 
     nuevo parametro llamado obras el cual guarda todas las obras que este artista tenga a su nombre"""
     artist["Obras"]= lt.newList()
-    print(artist)
     mp.put(catalog['artists'],artist['ConstituentID'],artist)
 
 
@@ -120,12 +124,27 @@ def addArtworkLab(catalog,artwork):
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def getOldByMedium(catalog,number,medium):
+    listaRespuesta = lt.newList("ARRAY_LIST")
+    listArtworks = (mp.get(catalog['medium'],medium))
+    print(listArtworks== None)
+    print(listArtworks)
+    listArtworks = me.getValue(listArtworks)
+    iteracion = lt.iterator(listArtworks)
+    for artwork in iteracion:
+        if (artwork['Medium'] == medium):
+            lt.addLast(listaRespuesta,artwork)
+    sa.sort(listaRespuesta,compareByDate)
+    listaRespuesta = lt.subList(listaRespuesta,0,int(number))
+    return listaRespuesta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
 
 # Funciones de Comparacion
+def compareByDate(artwork1,artwork2):
+     return ((artwork1['Date'] < artwork2['Date']))
 
 def compareArtworksbyObjectID(id, entry):
     """

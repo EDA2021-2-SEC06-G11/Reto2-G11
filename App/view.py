@@ -25,6 +25,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+from prettytable import PrettyTable
 
 
 """
@@ -36,7 +37,7 @@ operación solicitada
 
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
+    print("1- Cargar información en el catálogo y req lab 5")
     print("2- ")
 
 catalog = None
@@ -51,8 +52,16 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = controller.initCatalog()
         controller.loadData(catalog)
-        print(controller.solucionReqLab5(catalog))
+        medio = input("Ingrese el medio o tecnica que quiere buscar: ")
+        numero = input("Ingrese el numero de obras mas antiguas que desea ver: ")
+        listaRespuesta = controller.solucionReqLab5(catalog,numero,medio)
+        iteracionListaRespuesta = lt.iterator(listaRespuesta)
+        table = PrettyTable(["Title","Date"])
+        for artwork in iteracionListaRespuesta:
+            table.add_row([artwork["Title"],artwork['Date']])
 
+        print(table)
+        
     elif int(inputs[0]) == 2:
         pass
 
