@@ -85,8 +85,6 @@ def addArtwork(catalog, artwork):
     ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
     medium = artwork['Medium']
     if mp.contains(catalog['medium'],medium) :
-        if medium == "Glass":
-            print(medium)
         lista = mp.get(catalog['medium'], medium)
         valor = me.getValue(lista)
         lt.addLast(valor,artwork)
@@ -94,9 +92,6 @@ def addArtwork(catalog, artwork):
 
     else:
         lista = lt.newList("ARRAY_LIST")
-        if medium == "Glass":
-            print("Paso al else siendo glass")
-            print(medium)
         lt.addLast(lista,artwork)
         mp.put(catalog['medium'], artwork["Medium"], lista)
 
