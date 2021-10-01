@@ -59,8 +59,7 @@ def newCatalog():
                                    comparefunction=compareArtistbyConstituentID)
     catalog['medium'] = mp.newMap(1000,
                                   maptype='CHAINING',
-                                  loadfactor=4.0,
-                                  comparefunction=comparebyMedium)
+                                  loadfactor=4.0)
     catalog['objectId'] =  mp.newMap(100,
                                   maptype='CHAINING',
                                   loadfactor=4.0,
@@ -95,8 +94,6 @@ def addArtwork(catalog, artwork):
         lt.addLast(lista,artwork)
         mp.put(catalog['medium'], artwork["Medium"], lista)
 
-
-
     lt.addLast(catalog['artworks'], artwork)
     #mp.put(catalog['artworks'],artwork['ObjectID'],artwork)
 
@@ -122,16 +119,19 @@ def addArtworkLab(catalog,artwork):
 def getOldByMedium(catalog,number,medium):
     listaRespuesta = lt.newList("ARRAY_LIST")
     listArtworks = (mp.get(catalog['medium'],medium))
-    print(listArtworks== None)
-    print(listArtworks)
     listArtworks = me.getValue(listArtworks)
-    iteracion = lt.iterator(listArtworks)
-    for artwork in iteracion:
-        if (artwork['Medium'] == medium):
-            lt.addLast(listaRespuesta,artwork)
-    sa.sort(listaRespuesta,compareByDate)
-    listaRespuesta = lt.subList(listaRespuesta,0,int(number))
-    return listaRespuesta
+    #iteracion = lt.iterator(listArtworks)
+    #while iteracion.hasnext():
+        #artwork = iteracion.next()
+        #lt.addLast(listaRespuesta,artwork)
+    sa.sort(listArtworks,compareByDate)
+    if(lt.size(listArtworks) >= int(number)):
+        listaRespuesta = lt.subList(listArtworks,0,int(number))
+        return listaRespuesta
+    else:
+        return lt.newList()
+
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -167,17 +167,6 @@ def compareArtistbyConstituentID(id, entry):
     else:
         return -1
 
-def comparebyMedium(id, entry):
-    """
-    Compara dos mediums, id es un identificador
-    y entry una pareja llave-valor
-    """
-    identry = me.getKey(entry)
-    if (id) == (identry):
-        return 1
-    elif ((id) > (identry)):
-        return 0
-    else:
-        return 0
+
 
 
