@@ -71,16 +71,41 @@ def addArtwork(catalog, artwork):
     Edita el artwork para que busque sus artistas y las nacionalidades de estos artistas y los guarda
     Agrega el artwork que se suministro al catalog usando su objectID como su llave
     """
-    #constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
-    ##for constituentId in constituentIds :
+    constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
+    for constituentId in constituentIds :
         #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
-        ##Id = constituentId.strip()
-        ##Id = Id.strip("[")
-        ##Id = Id.strip("]")
+        Id = constituentId.strip()
+        Id = Id.strip("[")
+        Id = Id.strip("]")
         
         # UTILIZAMOS LOS CONSTITUENTID INDIVIDUALES PARA ASIGNAR NOMBRE Y NACIONALIDAD A LAS ARTWORKS
         # TAMBIEN SE AGREGA ESTA OBRA A LAS OBRAS DEL ARTISTA AL CUAL REFERENCIA
-        #artists = catalog['artists']
+        artists = catalog['artists']
+        if(mp.contains(artists,Id)):
+            ## Aqui se agrega la obra a la lista del artista
+            dupla = mp.get(artists,Id)
+            artista = me.getValue(dupla)
+            obras = artista['Obras']
+            lt.addLast(obras,artwork)
+            artista['Obras'] = obras
+            ## Aqui se le pone la informacion del artista a la obra
+            nacionalidad = artista['Nationality']
+            nombreArtista = artista['DisplayName']
+            ## Si todavia no ha creado la lista la crea y la guarda bajo el nombre ArtistNames
+            try : 
+                listaArtistas = (artwork['ArtistNames'])
+            except:
+                listaArtistas = lt.newList()
+            lt.addLast(listaArtistas,nombreArtista)
+            ## Hace lo mismo de nombre pero para nacionalidad
+            try:
+                listaNacionalidades = artwork['ArtistNationalities']
+            except:
+                listaNacionalidades = lt.newList()
+            lt.addLast(listaNacionalidades,nacionalidad)
+                
+
+
     ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
     medium = artwork['Medium']
     if mp.contains(catalog['medium'],medium) :
@@ -105,31 +130,25 @@ def addArtist(catalog, artist):
     mp.put(catalog['artists'],artist['ConstituentID'],artist)
 
 
-def addArtworkLab(catalog,artwork):
-    """
-    Funcion para agregar el artwork a la lista y despues agregar al mapa medium
-    """
-    lt.addLast(catalog['artworks'],artwork)
     
 
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
-def getOldByMedium(catalog,number,medium):
-    listaRespuesta = lt.newList("ARRAY_LIST")
-    listArtworks = (mp.get(catalog['medium'],medium))
-    listArtworks = me.getValue(listArtworks)
-    #iteracion = lt.iterator(listArtworks)
-    #while iteracion.hasnext():
-        #artwork = iteracion.next()
-        #lt.addLast(listaRespuesta,artwork)
-    sa.sort(listArtworks,compareByDate)
-    if(lt.size(listArtworks) >= int(number)):
-        listaRespuesta = lt.subList(listArtworks,0,int(number))
-        return listaRespuesta
-    else:
-        return lt.newList()
+def filtrarArtistasPorAños(catalog, añoInicial , añoFinal):
+    listaRespuesta = lt.newList()
+    llaves = mp.keySet(catalog['artists'])
+    iterator = lt.iterator(llaves)
+    for llave in iterator:
+        dupla = mp.get(catalog['artists'],llave)
+        artista = me.getValue(dupla)
+        añoArtista = int (artista['BeginDate'])
+        if int(añoInicial) <= añoArtista and añoArtista <= int(añoFinal):
+            lt.addLast(listaRespuesta, artista)
+
+    return listaRespuesta
+
 
 
 

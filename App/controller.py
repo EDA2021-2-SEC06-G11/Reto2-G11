@@ -83,6 +83,8 @@ def loadArtworks(catalog):
     'URL': 'http://www.moma.org/collection/works/147116', 
     'Circumference (cm)': '', 'Depth (cm)': '0', 'Diameter (cm)': '', 'Height (cm)': '31', 'Length (cm)': '', 
     'Weight (kg)': '', 'Width (cm)': '31', 'Seat Height (cm)': '', 'Duration (sec.)': ''
+    'ArtistNames': ['','']
+    'ArtistNationalities': ['','']
     }
     """
     artworkfile = cf.data_dir + 'Artworks-utf8-small.csv'
@@ -92,7 +94,7 @@ def loadArtworks(catalog):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
-def solucionReqLab5(catalog,number,medium):
-    respuesta = model.getOldByMedium(catalog,number,medium)
-    return respuesta
+def filtrarArtistasPorAños(catalog,añoInicial,añoFinal):
+    listaRespuesta = model.filtrarArtistasPorAños(catalog,añoInicial,añoFinal)
+    return listaRespuesta
 

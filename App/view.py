@@ -37,8 +37,8 @@ operación solicitada
 
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo y req lab 5")
-    print("2- ")
+    print("1- Cargar información en el catálogo")
+    print("2- Listar cronológicamente los artistas")
 
 catalog = None
 
@@ -52,18 +52,13 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = controller.initCatalog()
         controller.loadData(catalog)
-        medio = input("Ingrese el medio o tecnica que quiere buscar: ")
-        numero = input("Ingrese el numero de obras mas antiguas que desea ver: ")
-        listaRespuesta = controller.solucionReqLab5(catalog,numero,medio)
-        iteracionListaRespuesta = lt.iterator(listaRespuesta)
-        table = PrettyTable(["Title","Date"])
-        for artwork in iteracionListaRespuesta:
-            table.add_row([artwork["Title"],artwork['Date']])
 
-        print(table)
-        
     elif int(inputs[0]) == 2:
-        pass
+
+        añoInicial = input('Desde que año quieres hacer la busqueda')
+        añoFinal = input('Hasta que año quieres hacer la busqueda')
+        listaRango = controller.filtrarArtistasPorAños(catalog, añoInicial, añoFinal)
+        print(lt.size(listaRango))
 
     else:
         sys.exit(0)
