@@ -58,8 +58,9 @@ while True:
         añoInicial = input('Desde que año quieres hacer la busqueda')
         añoFinal = input('Hasta que año quieres hacer la busqueda')
         listaRango = controller.filtrarArtistasPorAños(catalog, añoInicial, añoFinal)
-        print(lt.size(listaRango))
-
+        print(lt.getElement(listaRango,1))
+        print(lt.getElement(listaRango,2))
+        print(lt.getElement(listaRango,3))
     else:
         sys.exit(0)
 sys.exit(0)

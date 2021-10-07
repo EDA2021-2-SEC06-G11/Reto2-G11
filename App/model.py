@@ -147,6 +147,8 @@ def filtrarArtistasPorAños(catalog, añoInicial , añoFinal):
         if int(añoInicial) <= añoArtista and añoArtista <= int(añoFinal):
             lt.addLast(listaRespuesta, artista)
 
+    ## Ahora que ya tenemos la lista filtrada podemos usar una funcion de ordenamiento y returnearla
+    sa.sort(listaRespuesta, compararArtistasPorAño)
     return listaRespuesta
 
 
@@ -157,6 +159,8 @@ def filtrarArtistasPorAños(catalog, añoInicial , añoFinal):
 # Funciones de ordenamiento
 
 # Funciones de Comparacion
+def compararArtistasPorAño(artista1,artista2):
+    return int(artista1['BeginDate']) < int(artista2['BeginDate'])
 def compareByDate(artwork1,artwork2):
      return ((artwork1['Date'] < artwork2['Date']))
 
