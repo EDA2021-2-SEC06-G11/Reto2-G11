@@ -37,6 +37,7 @@ Se define la estructura de un catálogo de videos. El catálogo tendrá dos list
 los mismos.
 """
 
+
 # Construccion de modelos
 def newCatalog():
     catalog = {'artists': None,
@@ -57,6 +58,10 @@ def newCatalog():
                                    maptype='CHAINING',
                                    loadfactor=4.0,
                                    comparefunction=compareArtistbyConstituentID)
+    catalog['DateAcquired'] = mp.newMap(800,
+                                    maptype='CHAINING',
+                                    loadfactor=4.0,
+                                    comparefunction=compareArtworkbyYear)
     catalog['medium'] = mp.newMap(1000,
                                   maptype='CHAINING',
                                   loadfactor=4.0)
@@ -64,6 +69,9 @@ def newCatalog():
                                   maptype='CHAINING',
                                   loadfactor=4.0,
                                   comparefunction=compareArtworksbyObjectID)
+    catalog['department'] =  mp.newMap(1000,
+                                  maptype='CHAINING',
+                                  loadfactor=4.0)
     return catalog
 # Funciones para agregar informacion al catalogo
 def addArtwork(catalog, artwork):
@@ -73,6 +81,7 @@ def addArtwork(catalog, artwork):
     """
     constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
     for constituentId in constituentIds :
+        listaArtistas = lt.newList()
         #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
         Id = constituentId.strip()
         Id = Id.strip("[")
@@ -94,6 +103,7 @@ def addArtwork(catalog, artwork):
             ## Si todavia no ha creado la lista la crea y la guarda bajo el nombre ArtistNames
             try : 
                 listaArtistas = (artwork['ArtistNames'])
+                print(listaArtistas)
             except:
                 listaArtistas = lt.newList()
             lt.addLast(listaArtistas,nombreArtista)
@@ -121,6 +131,41 @@ def addArtwork(catalog, artwork):
 
     lt.addLast(catalog['artworks'], artwork)
     #mp.put(catalog['artworks'],artwork['ObjectID'],artwork)
+
+    ## En esta parte vamos a agregar el artwork dependiendo del anio en el que adquirio
+    anio = artwork['DateAcquired'][:4]
+    if mp.contains(catalog['DateAcquired'], anio):
+        lista = mp.get(catalog['DateAcquired'], anio)
+        valor = me.getValue(lista)
+        dicfinal = ({'objectID': artwork['ObjectID'], 'Title': artwork['Title'], 'ArtistNames': listaArtistas, 'Medium': artwork['Medium'], 'Dimensions': artwork['Dimensions'], 'Date': artwork['Date'], 'DateAcquired': artwork['DateAcquired'], 'URL': artwork['URL']})
+        lt.addLast(valor,dicfinal)
+        mp.put(catalog['DateAcquired'],anio,valor)
+
+    else:
+        if anio != '':
+            lista = lt.newList("ARRAY_LIST")
+            dicfinal = ({'objectID': artwork['ObjectID'], 'Title': artwork['Title'], 'ArtistNames': listaArtistas, 'Medium': artwork['Medium'], 'Dimensions': artwork['Dimensions'], 'Date': artwork['Date'], 'DateAcquired': artwork['DateAcquired'], 'URL': artwork['URL']})
+            lt.addLast(lista,dicfinal)
+            mp.put(catalog['DateAcquired'], anio, lista)
+
+    ## En esta parte vamos a agregar el artwork dependiendo del departamento al que pertenece
+    department = artwork['Department']
+    if mp.contains(catalog['department'],department) :
+        lista = mp.get(catalog['department'], department)
+        valor = me.getValue(lista)
+        #dicfinal = ({'objectID': artwork['ObjectID'], 'Title': artwork['Title'], 'ArtistNames': listaArtistas, 'Medium': artwork['Medium'], 'Dimensions': artwork['Dimensions'], 'Date': artwork['Date'], 'DateAcquired': artwork['DateAcquired'], 'URL': artwork['URL']})
+        lt.addLast(valor,artwork)
+        mp.put(catalog['department'],department,valor)
+
+    else:
+        lista = lt.newList("ARRAY_LIST")
+        #dicfinal = ({'objectID': artwork['ObjectID'], 'Title': artwork['Title'], 'ArtistNames': listaArtistas, 'Medium': artwork['Medium'], 'Dimensions': artwork['Dimensions'], 'Date': artwork['Date'], 'DateAcquired': artwork['DateAcquired'], 'URL': artwork['URL']})
+        lt.addLast(lista,artwork)
+        mp.put(catalog['department'], artwork["Department"], lista)
+
+    #lt.addLast(catalog['department'], artwork)
+
+
 
 def addArtist(catalog, artist):
     """
@@ -152,7 +197,119 @@ def filtrarArtistasPorAños(catalog, añoInicial , añoFinal):
     return listaRespuesta
 
 
+def filtrarObrasPorAños(catalog,fechaInicial,fechaFinal):
+    listaRespuesta = lt.newList()
+    llavesa = mp.keySet(catalog['DateAcquired'])
+    llaves = lt.iterator(llavesa)
+    for llave in llaves:
+        if(int(fechaInicial[:4]) <= int(llave) and int(llave) <= int(fechaFinal[:4])):
+            dupla = mp.get(catalog['DateAcquired'],llave)
+            obra = me.getValue(dupla)
+            obriterator = lt.iterator(obra)
+            for o in obriterator:
+                fechaArtista = o['DateAcquired']
+                if fechaInicial <= fechaArtista and fechaArtista <= fechaFinal:
+                    lt.addLast(listaRespuesta, o)
 
+    sa.sort(listaRespuesta, compareByDate)
+    return listaRespuesta
+
+def clasificarObrasDeArtistaPorTecnica(catalog, nombre):
+    mapartists = mp.valueSet(catalog['artists'])
+    iteration = lt.iterator(mapartists)
+    elegido = []
+    for artista in iteration:
+        if artista['DisplayName'] == nombre:
+            elegido = artista
+            break
+    sa.sort(elegido['Obras'], comparetech)
+
+    popularity = lt.newList("ARRAY_LIST")
+    art1 = None
+    art2 = None
+    n = 0
+    tech_num = 0
+    artlist = lt.newList("ARRAY_LIST")
+    iteration = lt.iterator(elegido['Obras'])
+
+    for artwork in iteration:         
+        art1 = artwork['Medium']
+        if art1 != art2:
+            tech_num = tech_num + 1
+            if art2 != None:
+                lt.addLast(popularity, dic)
+            n = 1
+            artlist = lt.newList("ARRAY_LIST")
+            lt.addLast(artlist, artwork)
+            dic = {"Medium": artwork['Medium'], 'Number': n, 'Obras': artlist}
+            art2 = art1
+        else:
+            n = n + 1
+            art2 = art1
+            lt.addLast(artlist, artwork)
+            dic = {"Medium": artwork['Medium'], 'Number': n, 'Obras': artlist}
+    
+    if art1 == None:
+        tech_num = 0
+    elif art1 == art2:
+        lt.addLast(popularity, dic)
+        
+    sa.sort(popularity, comparetechniques)
+
+    return elegido, popularity, tech_num
+
+def obrasPorNacionalidad(catalog):
+        #Falta :D
+    listaRespuesta = 'falta'
+    return listaRespuesta
+
+def obrasDeDepartamento(catalog, departamento):
+    indep = lt.newList('ARRAY_LIST')
+    inold = lt.newList('ARRAY_LIST')
+    t_cost = 0.0
+    t_weight = 0.0
+    
+    mapartwork = mp.get(catalog['department'], departamento)
+    obras = me.getValue(mapartwork)
+    iteration = lt.iterator(obras)
+
+    for depo in iteration:
+            size = ''
+            cost = 0
+            if depo['Height (cm)'] != '' and depo['Width (cm)'] != '':
+                size = float(depo['Height (cm)']) * float(depo['Width (cm)'])/10000
+
+            if depo['Depth (cm)'] != '' and depo['Depth (cm)'] != '0':
+                if depo['Diameter (cm)'] !='':
+                    size = float(depo['Depth (cm)']) * (float(depo['Diameter (cm)']))/1000000
+                elif (depo['Height (cm)'] != '' and depo['Height (cm)'] != '0') and (depo['Width (cm)'] != '0' and depo['Width (cm)'] != ''):
+                     size = float(depo['Height (cm)']) * float(depo['Width (cm)']) * float(depo['Depth (cm)'])/1000000 
+            
+            if depo['Circumference (cm)'] != '' and depo['Circumference (cm)'] != '0':
+                size = ((float(depo['Circumference (cm)'])/2)**2)/3.14
+                if depo['Diameter (cm)'] !='' and depo['Diameter (cm)'] !='0':
+                        size = float(depo['Circumference (cm)']) * float(depo['Diameter (cm)'])/10000 
+                        if depo['Length (cm)'] != '' and depo['Length (cm)'] != '0':
+                            size = float(depo['Circumference (cm)']) * float(depo['Diameter (cm)']) * float(depo['Length (cm)'])/1000000
+            if size == '' or size == 0:
+                cost = 48.00
+            elif (depo['Weight (kg)']) != '' and float(depo['Weight (kg)']) > size*72:
+                size = float(depo['Weight (kg)'])
+
+            
+            if cost != 48.00 and (size != '' or size != 0):
+                cost = size*72.00
+
+            lt.addLast(indep, {'dep': depo, 'price': cost})
+            if depo['Date'] != '' and depo['Date'] != '0':
+                lt.addLast(inold, {'dep': depo, 'Date': depo['Date']})
+            t_cost = t_cost + cost
+            if depo['Weight (kg)'] != '':
+                t_weight = t_weight + float(depo['Weight (kg)'])
+
+    sa.sort(indep, comparecost)
+    sa.sort(inold, compareage)
+    return indep, inold, t_weight, t_cost
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -161,12 +318,13 @@ def filtrarArtistasPorAños(catalog, añoInicial , añoFinal):
 # Funciones de Comparacion
 def compararArtistasPorAño(artista1,artista2):
     return int(artista1['BeginDate']) < int(artista2['BeginDate'])
+
 def compareByDate(artwork1,artwork2):
-     return ((artwork1['Date'] < artwork2['Date']))
+     return ((artwork1['DateAcquired'] < artwork2['DateAcquired']))
 
 def compareArtworksbyObjectID(id, entry):
     """
-    Compara dos ids de los artowrks, id es un identificador
+    Compara dos ids de los artworks, id es un identificador
     y entry una pareja llave-valor
     """
     identry = me.getKey(entry)
@@ -190,6 +348,23 @@ def compareArtistbyConstituentID(id, entry):
     else:
         return -1
 
+def compareArtworkbyYear(year, entry):
+    yearentry = me.getKey(entry)
+    if (int(year) == int(yearentry)):
+        return 0
+    elif (int(year) > int(yearentry)):
+        return 1
+    else:
+        return -1
 
+def comparetech(art1, art2):
+    return (art1['Medium'] < art2['Medium'])
 
+def comparetechniques(art1, art2):
+    return (art1['Number'] > art2['Number'])
 
+def comparecost(art1, art2):
+    return (art1['price'] > art2['price'])
+
+def compareage(art1, art2):
+    return (art1['Date'] < art2['Date'])

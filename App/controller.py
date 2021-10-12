@@ -98,3 +98,18 @@ def filtrarArtistasPorAños(catalog,añoInicial,añoFinal):
     listaRespuesta = model.filtrarArtistasPorAños(catalog,añoInicial,añoFinal)
     return listaRespuesta
 
+def filtrarObrasPorAños(catalog,fechaInicial,fechaFinal):
+    listaRespuesta = model.filtrarObrasPorAños(catalog,fechaInicial,fechaFinal)
+    return listaRespuesta
+
+def clasificarObrasDeArtistaPorTecnica(catalog, nombre):
+    resultado = model.clasificarObrasDeArtistaPorTecnica(catalog, nombre)
+    return resultado
+
+def obrasPorNacionalidad(catalog):
+    resultado = model.obrasPorNacionalidad(catalog)
+    return resultado
+
+def obrasDeDepartamento(catalog, departamento):
+    resultado = model.obrasDeDepartamento(catalog, departamento)
+    return resultado
