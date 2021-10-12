@@ -20,9 +20,11 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from os import times
 import config as cf
 import sys
 import controller
+import time
 from DISClib.ADT import list as lt
 assert cf
 from prettytable import PrettyTable
@@ -222,7 +224,11 @@ while True:
         print("Req6")
 
     elif int(inputs[0]) == 8:
-        print("Req Lab6")
+        print("Cargando información de los archivos para el LAB 6....")
+        timeinicial = time.time()
+        catalog = controller.initCatalog()
+        controller.loadDatalab(catalog)
+        print(time.time()-timeinicial)
     else:
         sys.exit(0)
 sys.exit(0)

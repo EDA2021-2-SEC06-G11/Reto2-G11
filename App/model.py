@@ -72,6 +72,10 @@ def newCatalog():
     catalog['department'] =  mp.newMap(1000,
                                   maptype='CHAINING',
                                   loadfactor=4.0)
+    catalog['Nationalities'] = mp.newMap(1000,
+                                  maptype= 'CHAINING',
+                                  loadfactor = 4.0
+    )
     return catalog
 # Funciones para agregar informacion al catalogo
 def addArtwork(catalog, artwork):
@@ -368,3 +372,43 @@ def comparecost(art1, art2):
 
 def compareage(art1, art2):
     return (art1['Date'] < art2['Date'])
+
+
+## CODIGO DE REQUERIMIENTOS DE LABORATORIOS
+def addArtworkLab(catalog, artwork):
+    constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
+    for constituentId in constituentIds :
+        #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
+        Id = constituentId.strip()
+        Id = Id.strip("[")
+        Id = Id.strip("]")
+        artists = catalog['artists']
+        dupla = mp.get(artists,Id)
+        artista = me.getValue(dupla)
+        nacionalidadArtista = artista['Nationality']
+        try : 
+            ## Caso en el que la nacionalidad del artista ya existia
+            dupla = mp.get(catalog['Nationalities'],nacionalidadArtista)
+            listaObras = me.getValue(dupla)
+        except:
+            ## Caso en que la nacionalidad no existia
+            listaObras = lt.newList()
+        lt.addLast(listaObras,artwork)
+        mp.put(catalog['Nationalities'],nacionalidadArtista, listaObras)
+        
+    ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
+    medium = artwork['Medium']
+    if mp.contains(catalog['medium'],medium) :
+        lista = mp.get(catalog['medium'], medium)
+        valor = me.getValue(lista)
+        lt.addLast(valor,artwork)
+        mp.put(catalog['medium'],medium,valor)
+
+    else:
+        lista = lt.newList("ARRAY_LIST")
+        lt.addLast(lista,artwork)
+        mp.put(catalog['medium'], artwork["Medium"], lista)
+
+    lt.addLast(catalog['artworks'], artwork)
+
+
