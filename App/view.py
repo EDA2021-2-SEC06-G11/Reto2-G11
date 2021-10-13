@@ -228,7 +228,11 @@ while True:
         timeinicial = time.time()
         catalog = controller.initCatalog()
         controller.loadDatalab(catalog)
-        print(time.time()-timeinicial)
+        print("Existen :",lt.size(controller.pruebaMediumFunciona(catalog)),"Obras Con el medium Glass")
+        print('---------------------------------------------')
+        print("Existen: ",lt.size(controller.pruebaNationalityFunciona(catalog)), " Artistas Americanos")
+        print("Carga Existosa")
+        print("La carga se demoro: ", time.time()-timeinicial)
     else:
         sys.exit(0)
 sys.exit(0)

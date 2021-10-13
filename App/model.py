@@ -377,6 +377,7 @@ def compareage(art1, art2):
 ## CODIGO DE REQUERIMIENTOS DE LABORATORIOS
 def addArtworkLab(catalog, artwork):
     constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
+    i = 0
     for constituentId in constituentIds :
         #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
         Id = constituentId.strip()
@@ -386,16 +387,27 @@ def addArtworkLab(catalog, artwork):
         dupla = mp.get(artists,Id)
         artista = me.getValue(dupla)
         nacionalidadArtista = artista['Nationality']
+        ## Pregunta1: Existe el caso en el que hay dos artistas en una misma artwork que comparten su nacionalidad?, en ese caso como 
+        ## Se podria resolver sin hacer el get element del try pq creo que eso seria ineficiente.
+        ## Pregunta2: Cual usualmente es mejor linear o chaining? pq yo lei que linear es mejor pero ocupa mas memoria pq no pueden haber demasiada colision
+        ## Pregunta3: Cuantos numeros iniciales de datos le ponemos a cada mapa?
         try : 
             ## Caso en el que la nacionalidad del artista ya existia
             dupla = mp.get(catalog['Nationalities'],nacionalidadArtista)
             listaObras = me.getValue(dupla)
+            ultimaNacionalidad = lt.getElement(listaObras,lt.size(listaObras)-1)
         except:
             ## Caso en que la nacionalidad no existia
             listaObras = lt.newList()
-        lt.addLast(listaObras,artwork)
-        mp.put(catalog['Nationalities'],nacionalidadArtista, listaObras)
+            ultimaNacionalidad = False
         
+        if ultimaNacionalidad != False and nacionalidadArtista == ultimaNacionalidad and i!= 0:
+            i = i+1
+        else:
+            lt.addLast(listaObras,artwork)
+            i = i+1
+        mp.put(catalog['Nationalities'],nacionalidadArtista, listaObras)
+
     ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium
     medium = artwork['Medium']
     if mp.contains(catalog['medium'],medium) :
@@ -412,3 +424,16 @@ def addArtworkLab(catalog, artwork):
     lt.addLast(catalog['artworks'], artwork)
 
 
+def pruebaMediumFunciona(catalog):
+    listaRespuesta = lt.newList()
+
+    dupla = mp.get(catalog['medium'],'Glass')
+    listaRespuesta = me.getValue(dupla)
+    return listaRespuesta
+
+def pruebaNationalityFunciona(catalog):
+    listaRespuesta = lt.newList()
+
+    dupla = mp.get(catalog['Nationalities'],'American')
+    listaRespuesta = me.getValue(dupla)
+    return listaRespuesta

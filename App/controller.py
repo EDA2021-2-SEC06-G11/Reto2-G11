@@ -57,7 +57,7 @@ def loadArtistas(catalog):
     Ejemplo de artista: {'ConstituentID': '10370', 'DisplayName': 'Edison Price, New York, NY', 'ArtistBio': ''
     , 'Nationality': '', 'Gender': '', 'BeginDate': '0', 'EndDate': '0', 'Wiki QID': '', 'ULAN': '',
     'Obras': [obra1,obra2] es un lt tho}"""
-    artistfile = cf.data_dir + 'Artists-utf8-small.csv'
+    artistfile = cf.data_dir + 'Artists-utf8-20pct.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
@@ -149,7 +149,14 @@ def loadArtworkslab(catalog):
     'ArtistNationalities': ['','']
     }
     """
-    artworkfile = cf.data_dir + 'Artworks-utf8-small.csv'
+    artworkfile = cf.data_dir + 'Artworks-utf8-20pct.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addArtworkLab(catalog, artwork)
+    
+def pruebaMediumFunciona(catalog):
+    return model.pruebaMediumFunciona(catalog)
+
+    
+def pruebaNationalityFunciona(catalog):
+    return model.pruebaNationalityFunciona(catalog)
