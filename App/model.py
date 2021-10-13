@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.arraylist import iterator
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -377,7 +378,8 @@ def compareage(art1, art2):
 ## CODIGO DE REQUERIMIENTOS DE LABORATORIOS
 def addArtworkLab(catalog, artwork):
     constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
-    i = 0
+    ## crear lista nacionalidades agregadas
+    nacionalidadesAgregadas = lt.newList()
     for constituentId in constituentIds :
         #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
         Id = constituentId.strip()
@@ -390,22 +392,27 @@ def addArtworkLab(catalog, artwork):
         ## Pregunta1: Existe el caso en el que hay dos artistas en una misma artwork que comparten su nacionalidad?, en ese caso como 
         ## Se podria resolver sin hacer el get element del try pq creo que eso seria ineficiente.
         ## Pregunta2: Cual usualmente es mejor linear o chaining? pq yo lei que linear es mejor pero ocupa mas memoria pq no pueden haber demasiada colision
+        ## respuesta = Linear probing usa el doble de memoria de la que usa, esto significa que linear hace un rehash mucho mas seguido.
+        ## Separate chaining es para cuando hay limites de memoria y linear es el ideal
         ## Pregunta3: Cuantos numeros iniciales de datos le ponemos a cada mapa?
+        ## hazle una funcoin que identifique el archivo y cambie el tamaño del mapa acordemente
+        ## todo menos de n**2 es maximo lo peor que puede funcionar
         try : 
             ## Caso en el que la nacionalidad del artista ya existia
             dupla = mp.get(catalog['Nationalities'],nacionalidadArtista)
             listaObras = me.getValue(dupla)
-            ultimaNacionalidad = lt.getElement(listaObras,lt.size(listaObras)-1)
         except:
             ## Caso en que la nacionalidad no existia
             listaObras = lt.newList()
-            ultimaNacionalidad = False
         
-        if ultimaNacionalidad != False and nacionalidadArtista == ultimaNacionalidad and i!= 0:
-            i = i+1
-        else:
+        ## Revisa si ya ha agregado esta nacionalidad anteriormnete
+        iterador = lt.iterator(nacionalidadesAgregadas)
+        repetido = False
+        for nacionalidad in iterador:
+            if(nacionalidad == nacionalidadArtista):
+                repetido = True
+        if repetido == False:
             lt.addLast(listaObras,artwork)
-            i = i+1
         mp.put(catalog['Nationalities'],nacionalidadArtista, listaObras)
 
     ## En esta parte vamos a agregar el artwork a su correcto lugar en el mapa de Medium

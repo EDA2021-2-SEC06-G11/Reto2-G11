@@ -1,4 +1,3 @@
-nacion = [1,54,68]
-#nacion2 = False
-if(nacion != False):
-    print("Si entra")
+nacion = []
+for i in nacion:
+    print("entro 1 vez")
