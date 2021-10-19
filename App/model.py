@@ -228,11 +228,9 @@ def filtrarObrasPorAños(catalog,fechaInicial,fechaFinal):
                 fechaArtista = o['DateAcquired']
                 if fechaInicial <= fechaArtista and fechaArtista <= fechaFinal:
                     lt.addLast(listasup, o)
-                    print(fechaArtista)
             sa.sort(listasup, compareByDate)
             res = {'anio': llave, 'obras': listasup}
             lt.addLast(listaRespuesta, res)
-            print(res)
             contador = contador + lt.size(listasup)
 
     sa.sort(listaRespuesta, compareByDate2)
