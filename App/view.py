@@ -64,16 +64,19 @@ while True:
 
     elif int(inputs[0]) == 2:
         #Requerimiento 1
+        start = time.time()
         añoInicial = input('Desde que año quieres hacer la busqueda: ')
         añoFinal = input('Hasta que año quieres hacer la busqueda: ')
         listaRango = controller.filtrarArtistasPorAños(catalog, añoInicial, añoFinal)
         print(lt.getElement(listaRango,1))
         print(lt.getElement(listaRango,2))
         print(lt.getElement(listaRango,3))
-
+        end = time.time()
+        print(end - start)
 
     elif int(inputs[0]) == 3:
         #Requerimiento 2
+        start = time.time()
         fechaInicial = input('Desde que fecha quieres hacer la busqueda: ')
         fechaFinal = input('Hasta que fecha quieres hacer la busqueda: ')
         listaRango = controller.filtrarObrasPorAños(catalog, fechaInicial, fechaFinal)
@@ -82,17 +85,22 @@ while True:
         print("Artworks acquired between " + str(fechaInicial) + " and " + str(fechaFinal))
         print('')
         print('=============== Req No. 2 Answer ===============')
-        print('The MoMa acquired ' + str(lt.size(listaRango)) + ' unique pieces bewteen' + str(fechaInicial) + " and " + str(fechaFinal))
+        print('The MoMa acquired ' + str(listaRango[1]) + ' unique pieces bewteen' + str(fechaInicial) + " and " + str(fechaFinal))
         print("The first and last 3 artworks in range are...") 
-
         itable = PrettyTable(["ObjectID", "Title", "ArtistNames", "Medium", "Dimensions", "Date", "DateAcquired", "URL"])
 
-        contador1 = 1
-        contador2 = (lt.size(listaRango) - 1)
-
-        while contador1 < 4:
-            elemento = lt.getElement(listaRango, contador1)
-
+        q1 = 1
+        k1= 1
+        ca1 = 0
+        while ca1 < 3:
+            respuesta1 = lt.getElement(listaRango[0], q1)
+            respuesta = respuesta1['obras']
+            elemento = lt.getElement(respuesta, k1)
+            if k1 >= lt.size(respuesta):
+                q1 = q1 + 1
+                k1 = 1
+            else: k1 = k1 + 1
+            #elemento = lt.getElement(elemento1, ca1)
             #Nombres a string
             lista = lt.iterator(elemento['ArtistNames'])
             devuelta = ''
@@ -100,23 +108,37 @@ while True:
                 devuelta = devuelta + ',' +name
 
             itable.add_row([elemento['objectID'], elemento['Title'], devuelta, elemento['Medium'], elemento['Dimensions'], elemento['Date'], elemento['DateAcquired'], elemento['URL']])
-            contador1 = contador1 + 1
-        while contador2 > ((lt.size(listaRango))-4):
-            elemento = lt.getElement(listaRango, contador2)
+            ca1 = ca1 + 1
 
+
+
+        q1 = lt.size(listaRango[0])
+        k1= lt.size(lt.getElement(listaRango[0], q1)['obras'])
+        ca1 = 0
+        while ca1 < 3:
+            respuesta1 = lt.getElement(listaRango[0], q1)
+            respuesta = respuesta1['obras']
+            elemento = lt.getElement(respuesta, k1)
+            if k1 == 1:
+                q1 = q1 - 1
+                k1 = lt.size(lt.getElement(listaRango[0], q1)['obras'])
+            else: k1 = k1 - 1
             lista = lt.iterator(elemento['ArtistNames'])
             devuelta = ''
             for name in lista:
                 devuelta = devuelta + name
 
             itable.add_row([elemento['objectID'], elemento['Title'], devuelta, elemento['Medium'], elemento['Dimensions'], elemento['Date'], elemento['DateAcquired'], elemento['URL']])
-            contador2 = contador2 - 1
-        print(itable)
+            ca1 = ca1 + 1
 
+        print(itable)
+        end = time.time()
+        print(end - start)
 
 
     elif int(inputs[0]) == 4:
         #Requerimiento 3
+        start = time.time()
         artist = input('Que artista quieres buscar: ')
         result = controller.clasificarObrasDeArtistaPorTecnica(catalog, artist)
         print("=============== Req No. 3 Inputs ===============")
@@ -155,7 +177,8 @@ while True:
         print('His/Her most used Medium/Techniques is: ' + medium2 + ' with ' + str(contador) + ' pieces.')
         print('A sample of ' + str(contador) + ' ' + medium2 + ' from the collection are:')
         print(ttable)
-    
+        end = time.time()
+        print(end - start)
     
 
     elif int(inputs[0]) == 5:
@@ -164,11 +187,12 @@ while True:
         print(lt.getElement(listaRango,1))
         print(lt.getElement(listaRango,2))
         print(lt.getElement(listaRango,3))
-    
+
 
 
     elif int(inputs[0]) == 6:
         #Requerimiento 5
+        start = time.time()
         dep = input('Departamento que se busca investigar: ')
         result = controller.obrasDeDepartamento(catalog, dep)
         print("=============== Req No. 5 Inputs ===============")
@@ -208,6 +232,8 @@ while True:
         table.add_row([str(prim4a["ObjectID"]), str(prim4a["Title"]), '(prim4a["ArtistsNames"]["elements"])', str(prim4a["Medium"]), str(prim4a["Date"]), str(prim4a["Dimensions"]), str(prim4a["Classification"]), str(prim4['price']), str(prim4a["URL"])])
         table.add_row([str(prim5a["ObjectID"]), str(prim5a["Title"]), '(prim5a["ArtistsNames"]["elements"])', str(prim5a["Medium"]), str(prim5a["Date"]), str(prim5a["Dimensions"]), str(prim5a["Classification"]), str(prim5['price']), str(prim5a["URL"])])
         print(table)
+        end = time.time()
+        print(end - start)
 
         print('')
 
@@ -219,6 +245,8 @@ while True:
         table2.add_row([str(prim4b["ObjectID"]), str(prim4b["Title"]), (prim4b["ArtistsNames"]['elements']), str(prim4b["Medium"]), str(prim4b["Date"]), str(prim4b["Dimensions"]), str(prim4b["Classification"]), str(prim4c['Date']), str(prim4b["URL"])])
         table2.add_row([str(prim5b["ObjectID"]), str(prim5b["Title"]), (prim5b["ArtistsNames"]['elements']), str(prim5b["Medium"]), str(prim5b["Date"]), str(prim5b["Dimensions"]), str(prim5b["Classification"]), str(prim5c['Date']), str(prim5b["URL"])])
         print(table2)
+        
+
 
     elif int(inputs[0]) == 7:
         print("Req6")

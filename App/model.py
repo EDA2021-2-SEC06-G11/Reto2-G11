@@ -25,6 +25,7 @@
  """
 
 
+from os import cpu_count
 from DISClib.DataStructures.arraylist import iterator
 import config as cf
 from DISClib.ADT import list as lt
@@ -206,18 +207,35 @@ def filtrarObrasPorAños(catalog,fechaInicial,fechaFinal):
     listaRespuesta = lt.newList()
     llavesa = mp.keySet(catalog['DateAcquired'])
     llaves = lt.iterator(llavesa)
+
+    contador = 0
+
     for llave in llaves:
-        if(int(fechaInicial[:4]) <= int(llave) and int(llave) <= int(fechaFinal[:4])):
+        if(int(fechaInicial[:4]) < int(llave) and int(llave) < int(fechaFinal[:4])):
+            dupla = mp.get(catalog['DateAcquired'],llave)
+            obra = me.getValue(dupla)
+            sa.sort(obra, compareByDate)
+            res = {'anio': llave, 'obras': obra}
+            lt.addLast(listaRespuesta, res)
+            contador = contador + lt.size(obra)
+
+        elif (int(fechaInicial[:4]) == int(llave) or int(llave) == int(fechaFinal[:4])):
+            listasup = lt.newList()
             dupla = mp.get(catalog['DateAcquired'],llave)
             obra = me.getValue(dupla)
             obriterator = lt.iterator(obra)
             for o in obriterator:
                 fechaArtista = o['DateAcquired']
                 if fechaInicial <= fechaArtista and fechaArtista <= fechaFinal:
-                    lt.addLast(listaRespuesta, o)
+                    lt.addLast(listasup, o)
+            sa.sort(listasup, compareByDate)
+            res = {'anio': llave, 'obras': listasup}
+            lt.addLast(listaRespuesta, res)
+            contador = contador + lt.size(listasup)
 
-    sa.sort(listaRespuesta, compareByDate)
-    return listaRespuesta
+    sa.sort(listaRespuesta, compareByDate2)
+
+    return listaRespuesta, contador
 
 def clasificarObrasDeArtistaPorTecnica(catalog, nombre):
     mapartists = mp.valueSet(catalog['artists'])
@@ -326,6 +344,9 @@ def compararArtistasPorAño(artista1,artista2):
 
 def compareByDate(artwork1,artwork2):
      return ((artwork1['DateAcquired'] < artwork2['DateAcquired']))
+
+def compareByDate2(artwork1,artwork2):
+     return ((int(artwork1['anio']) < int(artwork2['anio'])))
 
 def compareArtworksbyObjectID(id, entry):
     """
