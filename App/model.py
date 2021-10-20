@@ -88,6 +88,8 @@ def addArtwork(catalog, artwork):
     constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
     for constituentId in constituentIds :
         listaArtistas = lt.newList()
+        nacionalidadesAgregadas = lt.newList()
+        artwork['ArtistNames'] = lt.newList()
         #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
         Id = constituentId.strip()
         Id = Id.strip("[")
@@ -103,22 +105,37 @@ def addArtwork(catalog, artwork):
             obras = artista['Obras']
             lt.addLast(obras,artwork)
             artista['Obras'] = obras
-            ## Aqui se le pone la informacion del artista a la obra
-            nacionalidad = artista['Nationality']
+            ## Aqui se le pone la nacinoalidad del artista a la obra
+            nacionalidadArtista = artista['Nationality']
+            if(nacionalidadArtista == "Nationality unknown" or nacionalidadArtista == ""):
+                nacionalidadArtista = "Unknown"
             nombreArtista = artista['DisplayName']
-            ## Si todavia no ha creado la lista la crea y la guarda bajo el nombre ArtistNames
+            ## Si todavia no ha creado la lista la crea y la guarda bajo el nombre ArtistNames de la obra
             try : 
                 listaArtistas = (artwork['ArtistNames'])
-                print(listaArtistas)
             except:
                 listaArtistas = lt.newList()
             lt.addLast(listaArtistas,nombreArtista)
-            ## Hace lo mismo de nombre pero para nacionalidad
-            try:
-                listaNacionalidades = artwork['ArtistNationalities']
-            except:
-                listaNacionalidades = lt.newList()
-            lt.addLast(listaNacionalidades,nacionalidad)
+            artwork['ArtistNames'] = listaArtistas
+
+            ## Crea un diccionario para la nacionalidad del Artista
+        try : 
+            ## Caso en el que la nacionalidad del artista ya existia
+            dupla = mp.get(catalog['Nationalities'],nacionalidadArtista)
+            listaObras = me.getValue(dupla)
+        except:
+            ## Caso en que la nacionalidad no existia
+            listaObras = lt.newList()
+        
+        ## Revisa si ya ha agregado esta nacionalidad anteriormnete
+        iterador = lt.iterator(nacionalidadesAgregadas)
+        repetido = False
+        for nacionalidad in iterador:
+            if(nacionalidad == nacionalidadArtista):
+                repetido = True
+        if repetido == False:
+            lt.addLast(listaObras,artwork)
+        mp.put(catalog['Nationalities'],nacionalidadArtista, listaObras)
                 
 
 
@@ -282,9 +299,26 @@ def clasificarObrasDeArtistaPorTecnica(catalog, nombre):
     return elegido, popularity, tech_num
 
 def obrasPorNacionalidad(catalog):
-        #Falta :D
-    listaRespuesta = 'falta'
-    return listaRespuesta
+    listaRespuesta = lt.newList()
+    maxNumObras = 0
+    maxNacionalidad = None
+    listkeyset = mp.keySet(catalog['Nationalities'])
+    iterador = lt.iterator(listkeyset)
+    mapaNacionalidades = mp.newMap(100,
+                                  maptype='PROBING',
+                                  loadfactor=0.5)
+    for nacionalidad in iterador:
+        dupla = mp.get(catalog['Nationalities'],nacionalidad)
+        mp.put(mapaNacionalidades, nacionalidad, lt.size(me.getValue(dupla)))
+        listanacionalidad = me.getValue(dupla)
+        if lt.size(listanacionalidad) > maxNumObras:
+            maxNumObras = lt.size(listanacionalidad)
+            maxNacionalidad = nacionalidad
+
+    dupla = mp.get(catalog['Nationalities'], maxNacionalidad)
+    listaRespuesta = me.getValue(dupla)
+
+    return listaRespuesta, maxNacionalidad, maxNumObras, mapaNacionalidades
 
 def obrasDeDepartamento(catalog, departamento):
     indep = lt.newList('ARRAY_LIST')

@@ -27,6 +27,8 @@ import controller
 import time
 from DISClib.ADT import list as lt
 assert cf
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
 from prettytable import PrettyTable
 
 
@@ -183,10 +185,62 @@ while True:
 
     elif int(inputs[0]) == 5:
         #Requerimiento 4
-        listaRango = controller.obrasPorNacionalidad(catalog)
-        print(lt.getElement(listaRango,1))
-        print(lt.getElement(listaRango,2))
-        print(lt.getElement(listaRango,3))
+        print("Ranking countries by their number of artworks in the MoMA")
+        lista, nacionalidad, numNacionalidad, maparesp = controller.obrasPorNacionalidad(catalog)
+
+        print("======================= Req No.4 Answer ====================")
+        print(" ")
+        print("Top 10 countries in the MoMA are:")
+
+        table = PrettyTable(['Nationality','Artworks'])
+        # Ok necesitamos organizar un mapa, entonces lo que vamos a hacer es crear una nueva lista que tenga las llaves en el orden
+        # de su mayor a menor
+        keyset = mp.keySet(maparesp)
+
+        listaMaxKey = lt.newList()
+
+        for i in range(10):
+            iteradorset = lt.iterator(keyset)
+            max = 0
+            maxkey = ""
+            cent = 1
+            cent2 = 1
+            for key in iteradorset:
+                if me.getValue(mp.get(maparesp,key)) > max:
+                    max = me.getValue(mp.get(maparesp,key))
+                    maxkey = key
+                    cent2 = cent
+                cent += 1
+            lt.addLast(listaMaxKey,maxkey)
+            lt.deleteElement(keyset,cent2)
+
+        iterador2 = lt.iterator(listaMaxKey)
+        for llave in iterador2:
+            print(llave)
+            table.add_row([llave,me.getValue(mp.get(maparesp,llave))])
+
+        print(table)
+
+        print("The top Nationality in the museum is: ", nacionalidad , "With ",numNacionalidad ," Unique Pieces")
+        print("The first and last 3 objects in the american artworks list are:")
+
+        table2 = PrettyTable(["ObjectID","Title","Artists Names","Medium","Date","Dimensions","Department","Clasification","URL"])
+        last1 = lt.getElement(lista , lt.size(lista)-1)
+        last2 = lt.getElement(lista , lt.size(lista)-2)
+        last3 = lt.getElement(lista, lt.size(lista)-3)
+        
+        for ind in range(1, 4):
+            nombresArtistas = ''
+            first1 = lt.getElement(lista,ind)
+            itera = lt.iterator(first1['ArtistNames'])
+            for nombre in itera:
+                print(nombre)
+                nombresArtistas = nombresArtistas +", "+ nombre
+            table2.add_row([first1['ObjectID'],first1['Title'],nombresArtistas,first1['Medium'],first1['Date'],first1['Dimensions'],first1['Department'],first1['Classification'],first1['URL']])
+ 
+
+        print(table2)
+        
 
 
 
