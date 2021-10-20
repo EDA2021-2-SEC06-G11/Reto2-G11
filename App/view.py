@@ -113,7 +113,6 @@ while True:
             ca1 = ca1 + 1
 
 
-
         q1 = lt.size(listaRango[0])
         k1= lt.size(lt.getElement(listaRango[0], q1)['obras'])
         ca1 = 0
@@ -234,10 +233,18 @@ while True:
             first1 = lt.getElement(lista,ind)
             itera = lt.iterator(first1['ArtistNames'])
             for nombre in itera:
-                print(nombre)
-                nombresArtistas = nombresArtistas +", "+ nombre
+                nombresArtistas = nombresArtistas +" "+ nombre
+
             table2.add_row([first1['ObjectID'],first1['Title'],nombresArtistas,first1['Medium'],first1['Date'],first1['Dimensions'],first1['Department'],first1['Classification'],first1['URL']])
  
+        for ind in range(1, 4):
+            nombresArtistas = ''
+            last2 = lt.getElement(lista,lt.size(lista)-ind)
+            itera2 = lt.iterator(last2['ArtistNames'])
+            for nombre in itera2:
+                nombresArtistas = nombresArtistas +" "+ nombre
+            table2.add_row([last2['ObjectID'],last2['Title'],nombresArtistas,last2['Medium'],last2['Date'],last2['Dimensions'],last2['Department'],last2['Classification'],last2['URL']])
+
 
         print(table2)
         

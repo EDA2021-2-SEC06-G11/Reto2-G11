@@ -85,11 +85,11 @@ def addArtwork(catalog, artwork):
     Edita el artwork para que busque sus artistas y las nacionalidades de estos artistas y los guarda
     Agrega el artwork que se suministro al catalog usando su objectID como su llave
     """
+    artwork['ArtistNames'] = lt.newList()
+    nacionalidadesAgregadas = lt.newList()
     constituentIds = artwork['ConstituentID'].split(",")  # Se obtienen los autores
     for constituentId in constituentIds :
         listaArtistas = lt.newList()
-        nacionalidadesAgregadas = lt.newList()
-        artwork['ArtistNames'] = lt.newList()
         #ARREGLAMOS LOS CONSTITUENTID ANTES DE UTILIZARLOS
         Id = constituentId.strip()
         Id = Id.strip("[")
@@ -110,11 +110,10 @@ def addArtwork(catalog, artwork):
             if(nacionalidadArtista == "Nationality unknown" or nacionalidadArtista == ""):
                 nacionalidadArtista = "Unknown"
             nombreArtista = artista['DisplayName']
+
             ## Si todavia no ha creado la lista la crea y la guarda bajo el nombre ArtistNames de la obra
-            try : 
-                listaArtistas = (artwork['ArtistNames'])
-            except:
-                listaArtistas = lt.newList()
+            
+            listaArtistas = (artwork['ArtistNames'])
             lt.addLast(listaArtistas,nombreArtista)
             artwork['ArtistNames'] = listaArtistas
 
@@ -135,6 +134,7 @@ def addArtwork(catalog, artwork):
                 repetido = True
         if repetido == False:
             lt.addLast(listaObras,artwork)
+            lt.addLast(nacionalidadesAgregadas, nacionalidadArtista)
         mp.put(catalog['Nationalities'],nacionalidadArtista, listaObras)
                 
 
