@@ -184,6 +184,7 @@ while True:
 
     elif int(inputs[0]) == 5:
         #Requerimiento 4
+        start  = time.time()
         print("Ranking countries by their number of artworks in the MoMA")
         lista, nacionalidad, numNacionalidad, maparesp = controller.obrasPorNacionalidad(catalog)
 
@@ -245,9 +246,10 @@ while True:
                 nombresArtistas = nombresArtistas +" "+ nombre
             table2.add_row([last2['ObjectID'],last2['Title'],nombresArtistas,last2['Medium'],last2['Date'],last2['Dimensions'],last2['Department'],last2['Classification'],last2['URL']])
 
+        end = time.time()
 
         print(table2)
-        
+        print(end-start)
 
 
 
